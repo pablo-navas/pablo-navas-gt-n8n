@@ -1,0 +1,824 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "justificaciones",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        112
+      ],
+      "id": "e695b13f-1fa5-4026-8242-eec39d7d35ba",
+      "name": "Webhook",
+      "webhookId": "b968f6d4-9c2d-47fa-a422-c42eb2e69c23"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        160
+      ],
+      "id": "5554b163-6456-4b47-8b00-4058daeadb52",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yj97l0riKJu674He",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Datos del alumno en el formulario:\nNombre: {{ $node['Webhook'].json.body.nombre }}\nMotivo declarado: {{ $node['Webhook'].json.body.motivo }}\n\nTexto extraído del documento real que subió:\n{{ $json.text }}\n\nPor favor, analiza si el texto del documento valida el motivo del alumno.\nEres un evaluador de control de estudios de ingeniería. Analiza de forma estricta pero justa el texto del documento. Comprueba que las fechas coincidan y que el documento no sea falso o hable de otra persona. \n\nSi el documento es correcto, tu decisión será VÁLIDO.\nSi el documento claramente no coincide o es falso, tu decisión será INVÁLIDO.\nSi el texto es confuso, borroso o no puedes decidir con certeza si es válido o no, tu decisión será ENDUDA.\n\nResponde obligatoriamente con este formato exacto:\nDECISIÓN: [Escribe aquí VÁLIDO o INVÁLIDO o ENDUDA]\nMOTIVO: [Escribe aquí una breve explicación]\n\nREGLA CRÍTICA DE FORMATO: No utilices ningún signo de puntuación o formato especial que no sean letras o números. Está completamente prohibido usar asteriscos, comillas simples, comillas dobles, puntos y comas, o guiones (por ejemplo, no uses *, **, '', \"\", ;, -). Solo texto limpio.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "17fa7365-17e8-477d-8620-db090d59a840",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q",
+          "mode": "list",
+          "cachedResultName": "skill n8n 12",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $('Webhook').item.json.body.nombre }}",
+            "valido o inavlido": "={{ $json.output }}",
+            "documento": "={{ $('Webhook').item.json.webhookUrl }}",
+            "gmail": "={{ $('If').item.json.body.correo }}",
+            "Id_user": "={{ $('If').item.json.body.dni }}",
+            "fecha": "={{ $('Webhook').item.json.body.fecha }}",
+            "chat_id": "={{ $('Webhook').item.json.body.chat_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "gmail",
+              "displayName": "gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Id_user",
+              "displayName": "Id_user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "documento",
+              "displayName": "documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valido o inavlido",
+              "displayName": "valido o inavlido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        64
+      ],
+      "id": "744505f5-0fc2-4891-81ec-804b3d5765d2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YfiIteF2CKJLb1df",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cf887751-e329-4d8e-af2b-3c0d133045c3",
+              "leftValue": "=, jpeg, jpg, png, , JPG",
+              "rightValue": "={{ $('Webhook').first().json.body.documento }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "6d52f985-4c01-4e26-945f-a276f69d72db",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -416,
+        64
+      ],
+      "id": "721d8dbc-7730-42c5-9b58-211c15aabbb5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.correo }}",
+        "subject": "invalido",
+        "message": "=Hola {{ $('Webhook').item.json.body.nombre }}, el sistema ha rechazado tu solicitud porque el archivo adjunto no tiene un formato válido. Por favor, vuelve a llenar el formulario asegurándote de subir un documento en formato PDF, JPG o PNG.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "60527bc1-81e8-4ef8-be64-593e31602311",
+      "name": "Send a message",
+      "webhookId": "5bf64216-2fb3-4a1a-adc8-1000e610bc6e"
+    },
+    {
+      "parameters": {
+        "chatId": "=8801858469",
+        "text": "=Hola {{ $('Webhook').item.json.body.nombre }}, tu justificación ha sido evaluada por nuestro sistema automatizado.\n\nEl resultado es:\n{{ $('AI Agent').item.json.output }}",
+        "additionalFields": {}
+      },
+      "id": "b3050391-1cb1-4356-b4ba-f61b39cf2239",
+      "name": "Notificar Resultado Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        64
+      ],
+      "webhookId": "1f758903-0418-47bd-ac3d-3adb5846b448",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "5dbfb455-d392-434c-81a8-22d1c5b4427c",
+      "name": "Telegram Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -704,
+        656
+      ],
+      "webhookId": "2931fffd-b6d8-4246-bdc2-d2f33425c7ff",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.message?.text || $json.callback_query?.data }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "ver_estado",
+              "output": 1
+            },
+            {
+              "value2": "crear_tramite",
+              "output": 2
+            }
+          ]
+        },
+        "fallbackOutput": 0
+      },
+      "id": "fbdb1695-3c4c-463f-890b-02937e0d08c6",
+      "name": "Switch Menu1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q",
+          "mode": "list",
+          "cachedResultName": "skill n8n 12"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Id_user",
+              "lookupValue": "={{ $json.message?.text.replace('/start ', '') || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e2176a2-cc06-4d72-8aa7-3ec42f2376cc",
+      "name": "Buscar DNI",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -224,
+        512
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YfiIteF2CKJLb1df",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c-dni",
+              "leftValue": "={{ $json.Id_user }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "name": "filter.operator.notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "70337df4-c1c2-4935-837c-7cd59500da13",
+      "name": "IF DNI Existe",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "=8801858469",
+        "text": "❌ No existe ese DNI en nuestra base de datos. Por favor, asegúrate de haber enviado el formulario de registro y de escribir tu DNI correctamente.",
+        "additionalFields": {}
+      },
+      "id": "f4b7c690-d244-4a47-8c74-dad8db2a40d3",
+      "name": "DNI No Encontrado",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        560
+      ],
+      "webhookId": "f02cb4ac-85e1-4dc1-b7f8-6ef25e025aac",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8801858469",
+        "text": "\"¡Bienvenido al sistema de control de estudios! Hemos validado tu DNI correctamente. ¿Qué vamos a hacer hoy cerebro?\"",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📝 Reportar Falta",
+                    "additionalFields": {
+                      "callback_data": "crear_tramite"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔍 Consultar Estado",
+                    "additionalFields": {
+                      "callback_data": "ver_estado"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "783202a5-a818-40ce-9948-3964054cefd7",
+      "name": "Enviar Bienvenida1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        400
+      ],
+      "webhookId": "9200863a-dbab-4311-9acb-aefbfc8b269c",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q",
+          "mode": "list",
+          "cachedResultName": "skill n8n 12"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "nombre",
+              "lookupValue": "={{ $json.callback_query.from.first_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "30a23c2f-723b-4a63-af8e-45a001028021",
+      "name": "Buscar Estado Alumno1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -192,
+        704
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YfiIteF2CKJLb1df",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8801858469",
+        "text": "=Hola, el estado de tu trámite actual es: {{ $json[\"valido o inavlido\"] }}",
+        "additionalFields": {}
+      },
+      "id": "4b43eabd-a862-4a8f-a305-1e3fd8c31ac7",
+      "name": "Responder Estado1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        752
+      ],
+      "webhookId": "d9624484-814e-42eb-acbe-f11a448df36a",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "asgn-2",
+              "name": "idTramite",
+              "value": "=\"AETHER-2026-TG-\" + Math.floor(100000 + Math.random() * 900000)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "075d6b6e-d7f5-4ff2-8c6c-55b744bca2c7",
+      "name": "Generar ID Trámite1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dFbhmn8UD4DX7lxcC-cpDSTTkGT9OvH_IJO-lCFEf_Q",
+          "mode": "list",
+          "cachedResultName": "skill n8n 12"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Id_tramite": "={{ $json.idTramite }}",
+            "nombre": "={{ $('Telegram Trigger1').item.json.callback_query.from.first_name }}",
+            "chat_id": "={{ $('Telegram Trigger1').item.json.callback_query.message.chat.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id_tramite",
+              "displayName": "Id_tramite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "documento",
+              "displayName": "documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valido o inavlido",
+              "displayName": "valido o inavlido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "93781e58-8288-41b7-a821-0d2ade03d01b",
+      "name": "Guardar Trámite Pendiente1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        32,
+        976
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YfiIteF2CKJLb1df",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8801858469",
+        "text": "={{ 'Tu trámite ha sido abierto con el ID: ' + $json.idTramite + '. Por favor, envía ahora tu documento de justificación.' }}",
+        "additionalFields": {}
+      },
+      "id": "51c5ed37-fd85-454e-9f94-46881abd83f0",
+      "name": "Confirmar Trámite Alumno1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        816
+      ],
+      "webhookId": "3a406184-3841-4e90-8b80-53b7af4186e3",
+      "credentials": {
+        "telegramApi": {
+          "id": "aneUgpuGsfnYtQPA",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Notificar Resultado Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Switch Menu1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Menu1": {
+      "main": [
+        [
+          {
+            "node": "Buscar DNI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar Estado Alumno1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generar ID Trámite1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar DNI": {
+      "main": [
+        [
+          {
+            "node": "IF DNI Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF DNI Existe": {
+      "main": [
+        [
+          {
+            "node": "Enviar Bienvenida1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DNI No Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Estado Alumno1": {
+      "main": [
+        [
+          {
+            "node": "Responder Estado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar ID Trámite1": {
+      "main": [
+        [
+          {
+            "node": "Guardar Trámite Pendiente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Trámite Pendiente1": {
+      "main": [
+        [
+          {
+            "node": "Confirmar Trámite Alumno1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cbdac2e5-124d-4d16-8a3c-98b18e8b0f72",
+  "meta": {
+    "instanceId": "51341d6698baff1af1fa28c3949ab34ac7db380994453b95ab43d65f95192647"
+  },
+  "id": "6RBZqnHG5oWMHPnr",
+  "tags": []
+}
